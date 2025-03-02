@@ -1,22 +1,38 @@
-# Compiler to user
+# Compiler to use
 CXX = g++
 
 # Compiler flags
-CXXFlags = -Wall -std=c++11
+CXXFLAGS = -Wall -std=c++11 -pedantic
 
-# Target executable name
+# Target executable names
 TARGET = lexer
+TEST_TARGET = test_lexer
 
 # Source files
-SOURCES = main.cpp lexer.cpp
+SOURCES = lexer.cpp
+TEST_SOURCES = test_lexer.cpp
 
-# Object files (automatically generated from sources)
+# Object files
 OBJECTS = $(SOURCES:.cpp=.o)
+TEST_OBJECTS = $(TEST_SOURCES:.cpp=.o) lexer.o
 
-# Main target
-$(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFlags) $(OBJECTS) -o $(TARGET)
+# Main targets
+all: $(TARGET) $(TEST_TARGET)
+
+$(TARGET): main.o $(OBJECTS)
+	$(CXX) $(CXXFLAGS) main.o $(OBJECTS) -o $(TARGET)
+
+$(TEST_TARGET): $(TEST_OBJECTS)
+	$(CXX) $(CXXFLAGS) $(TEST_OBJECTS) -o $(TEST_TARGET)
+
+# Pattern rule for object files
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Clean Rule
 clean:
-	rm -f $(OBJECTS) $(TARGET)
+	rm -f *.o $(TARGET) $(TEST_TARGET)
+
+# Test Rule
+test: $(TEST_TARGET)
+	./$(TEST_TARGET)
