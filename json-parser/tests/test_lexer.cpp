@@ -167,7 +167,7 @@ void test_number_tokenization() {
 }
 
 void test_special_tokens() {
-    // Test case 1: true, false, null
+    // Test case 1: Basic literals
     {
         std::ofstream testFile(getTestFilePath("test_special1.json"));
         testFile << "true false null";
@@ -180,6 +180,96 @@ void test_special_tokens() {
         assert(tokens[0].type == TokenType::TRUE);
         assert(tokens[1].type == TokenType::FALSE);
         assert(tokens[2].type == TokenType::NULL_TOKEN);
+    }
+
+    // Test case 2: Invalid true literal
+    {
+        std::ofstream testFile(getTestFilePath("test_special2.json"));
+        testFile << "truex";  // Invalid - extra character
+        testFile.close();
+
+        Lexer lexer(getTestFilePath("test_special2.json"));
+        bool caught_exception = false;
+        try {
+            auto tokens = lexer.tokenize();
+        } catch (const std::runtime_error& e) {
+            caught_exception = true;
+            assert(std::string(e.what()).find(
+                       "Invalid character after 'true'") != std::string::npos);
+        }
+        assert(caught_exception);
+    }
+
+    // Test case 3: Invalid false literal
+    {
+        std::ofstream testFile(getTestFilePath("test_special3.json"));
+        testFile << "fals";  // Invalid - incomplete
+        testFile.close();
+
+        Lexer lexer(getTestFilePath("test_special3.json"));
+        bool caught_exception = false;
+        try {
+            auto tokens = lexer.tokenize();
+        } catch (const std::runtime_error& e) {
+            caught_exception = true;
+            assert(std::string(e.what()).find(
+                       "Invalid literal: expected 'false'") !=
+                   std::string::npos);
+        }
+        assert(caught_exception);
+    }
+
+    // Test case 4: Invalid null literal
+    {
+        std::ofstream testFile(getTestFilePath("test_special4.json"));
+        testFile << "nul";  // Invalid - incomplete
+        testFile.close();
+
+        Lexer lexer(getTestFilePath("test_special4.json"));
+        bool caught_exception = false;
+        try {
+            auto tokens = lexer.tokenize();
+        } catch (const std::runtime_error& e) {
+            caught_exception = true;
+            assert(std::string(e.what()).find(
+                       "Invalid literal: expected 'null'") !=
+                   std::string::npos);
+        }
+        assert(caught_exception);
+    }
+
+    // Test case 5: Literals in context
+    {
+        std::ofstream testFile(getTestFilePath("test_special5.json"));
+        testFile << R"({"key1": true, "key2": false, "key3": null})";
+        testFile.close();
+
+        Lexer lexer(getTestFilePath("test_special5.json"));
+        auto tokens = lexer.tokenize();
+
+        assert(tokens.size() == 11);
+        assert(tokens[3].type == TokenType::TRUE);
+        assert(tokens[7].type == TokenType::FALSE);
+        assert(tokens[11].type == TokenType::NULL_TOKEN);
+    }
+
+    // Test case 6: EOF during literal
+    {
+        std::ofstream testFile(getTestFilePath("test_special6.json"));
+        testFile << "tr";  // Incomplete true
+        testFile.close();
+
+        Lexer lexer(getTestFilePath("test_special6.json"));
+        bool caught_exception = false;
+        try {
+            auto tokens = lexer.tokenize();
+        } catch (const std::runtime_error& e) {
+            caught_exception = true;
+            assert(std::string(e.what()).find(
+                       "Unexpected EOF while parsing 'true'") !=
+                   std::string::npos);
+        }
+        assert(caught_exception);
     }
 
     std::cout << "All special token tests passed!" << std::endl;

@@ -21,5 +21,7 @@ class Lexer {
     char handleEscape();
 
     Token tokenizeDigit();
-    Token tokenizeLiteral();
+    Token tokenizeTrue();
+    Token tokenizeFalse();
+    Token tokenizeNull();
 };
