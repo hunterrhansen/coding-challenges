@@ -120,22 +120,97 @@ char Lexer::handleEscape() {
     return '\0';
 }
 
+enum class NumberState {
+    INTEGER,   // Parsing the integer part (before decimal)
+    FRACTION,  // Parsing decimal places
+    EXPONENT,  // Parsing the exponent
+};
+
 Token Lexer::tokenizeDigit() {
     std::string number;
     char c;
+    NumberState state = NumberState::INTEGER;
 
-    // Get the first character (which we already know is a digit or minus sign)
-    c = file.get();
-    number += c;
+    // Example structure:
+    while (file.peek() != EOF) {
+        c = file.peek();  // Look at next character without consuming it
 
-    // TODO: Implement full JSON number parsing:
-    // 1. Handle integers: -?[0-9]+
-    // 2. Handle decimals: .[0-9]+
-    // 3. Handle exponents: [eE][+-]?[0-9]+
-    // 4. Validate no leading zeros except for 0
-    // 5. Throw error for invalid number formats
+        switch (state) {
+            case NumberState::INTEGER:
+                if (c == '.') {
+                    // Move to fraction state
+                    state = NumberState::FRACTION;
+                    number += file.get();  // Consume the '.'
+                } else if (c == 'e' || c == 'E') {
+                    // Move to exponent state
+                    state = NumberState::EXPONENT;
+                    number += file.get();  // Consume the 'e' or 'E'
+                } else if (isdigit(c)) {
+                    // Stay in integer state
+                    number += file.get();  // Consume the digit
+                } else {
+                    // End of number reached
+                    return Token(TokenType::NUMBER, number);
+                }
+                break;
 
-    return Token(TokenType::NUMBER, number);
+            case NumberState::FRACTION:
+                if (!isdigit(c)) {  // First check after decimal point
+                    throwError(
+                        "invalid number - expected digit after decimal point");
+                }
+                number += file.get();  // Consume first digit after decimal
+
+                while (file.peek() != EOF) {
+                    c = file.peek();
+                    if (c == '.') {
+                        throwError("invalid number - multiple decimal points");
+                    } else if (c == 'e' || c == 'E') {
+                        state = NumberState::EXPONENT;
+                        number += file.get();
+                        break;
+                    } else if (isdigit(c)) {
+                        number += file.get();
+                    } else {
+                        return Token(TokenType::NUMBER, number);
+                    }
+                }
+                break;
+
+            case NumberState::EXPONENT:
+                // First character after 'e'/'E' can be +/- or must be digit
+                c = file.peek();
+                if (c == '+' || c == '-') {
+                    number += file.get();  // Consume the sign
+                    c = file.peek();
+                }
+
+                // Must have at least one digit after e/E (+/-)
+                if (!isdigit(c)) {
+                    throwError("invalid number - expected digit in exponent");
+                }
+
+                // Consume first digit
+                number += file.get();
+
+                // Continue consuming digits until non-digit
+                while (file.peek() != EOF) {
+                    c = file.peek();
+                    if (isdigit(c)) {
+                        number += file.get();
+                    } else {
+                        return Token(TokenType::NUMBER, number);
+                    }
+                }
+                break;
+        }
+    }
+    // ... error handling
+
+    // After the switch statement, add EOF handling
+    if (file.peek() == EOF) {
+        return Token(TokenType::NUMBER, number);
+    }
 }
 
 Token Lexer::tokenizeTrue() {
