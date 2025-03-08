@@ -3,5 +3,10 @@
     "iostream": "cpp",
     "iosfwd": "cpp",
     "vector": "cpp"
-  }
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "lexer.h": "*.h",
+    "main.cpp": "*.cpp",
+  },
 }

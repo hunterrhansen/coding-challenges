@@ -1,0 +1,42 @@
+{
+	"folders": [
+		{
+			"path": "./json-parser/",
+			"name": "json-parser"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"stack": "cpp",
+			"vector": "cpp"
+		},
+		"git.repositorySearchDepth": 2,
+		"git.openRepositoryInParentFolders": "always",
+		"editor.formatOnSave": true,
+		"editor.rulers": [80, 100],
+		"editor.renderWhitespace": "boundary",
+		"C_Cpp.clang_format_style": "{ BasedOnStyle: Google, IndentWidth: 4 }",
+		"C_Cpp.default.cppStandard": "c++17",
+		"files.exclude": {
+			"**/.git": true,
+			"**/build": true,
+			"**/**.o": true
+		},
+		"explorer.fileNesting.enabled": true,
+        "explorer.fileNesting.patterns": {
+            "*.cpp": "${capture}.h",
+            "README.md": "LICENSE, CHANGELOG.md, CONTRIBUTING.md, .gitignore, .clang-format, Makefile, CMakeLists.txt, *.cmake, .editorconfig"
+        }
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"twxs.cmake",
+			"ms-vscode.cmake-tools"
+		]
+	},
+	"launch": {
+		"configurations": [],
+		"compounds": []
+	}
+}

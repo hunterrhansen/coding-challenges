@@ -1,0 +1,4 @@
+*.o
+*.json
+test_lexer
+lexer
