@@ -1,16 +1,16 @@
 #pragma once
+#include <fstream>
 #include <string>
 #include <vector>
-#include <fstream>
+
 #include "token.h"
 
-class Lexer
-{
-public:
-    Lexer(const std::string &filePath);
+class Lexer {
+   public:
+    Lexer(const std::string& filePath);
     std::vector<Token> tokenize();
 
-private:
+   private:
     std::ifstream file;
     int line;
     int column;
@@ -18,4 +18,8 @@ private:
     void throwError(const std::string& message);
 
     Token tokenizeString();
+    char handleEscape();
+
+    Token tokenizeDigit();
+    Token tokenizeLiteral();
 };
