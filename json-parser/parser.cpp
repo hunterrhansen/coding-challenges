@@ -16,12 +16,13 @@ bool Parser::parse() {
         return false;
     }
 
-    try {
-        parseValue();
-        return current == tokens.size();  // Ensure we consumed all tokens
-    } catch (const std::runtime_error& e) {
-        return false;
+    parseValue();
+
+    if (current < tokens.size()) {
+        throw std::runtime_error("Expected end of input");
     }
+
+    return true;
 }
 
 void Parser::parseValue() {
@@ -78,6 +79,11 @@ void Parser::parseObject() {
         }
 
         consume(TokenType::COMMA);
+
+        // Check for trailing comma by looking ahead
+        if (peek().type == TokenType::RIGHT_BRACE) {
+            throw std::runtime_error("Trailing comma in object");
+        }
     }
 }
 
@@ -98,6 +104,11 @@ void Parser::parseArray() {
         }
 
         consume(TokenType::COMMA);
+
+        // Check for trailing comma by looking ahead
+        if (peek().type == TokenType::RIGHT_BRACKET) {
+            throw std::runtime_error("Trailing comma in array");
+        }
     }
 }
 

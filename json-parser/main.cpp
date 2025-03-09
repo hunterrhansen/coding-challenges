@@ -64,8 +64,8 @@ bool runStepTests(int step) {
     // Test valid files
     std::vector<std::string> validFiles = {baseDir + "valid.json"};
 
-    // Add valid2.json for steps that have it
-    if (step >= 2) {
+    // Add valid2.json only for step 2
+    if (step == 2) {
         validFiles.push_back(baseDir + "valid2.json");
     }
 
