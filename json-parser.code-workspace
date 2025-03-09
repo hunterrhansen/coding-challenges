@@ -8,7 +8,8 @@
 	"settings": {
 		"files.associations": {
 			"stack": "cpp",
-			"vector": "cpp"
+			"vector": "cpp",
+			"string": "cpp"
 		},
 		"git.repositorySearchDepth": 2,
 		"git.openRepositoryInParentFolders": "always",

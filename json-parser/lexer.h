@@ -20,7 +20,7 @@ class Lexer {
     Token tokenizeString();
     char handleEscape();
 
-    Token tokenizeDigit();
+    Token tokenizeDigit(char& c);
     Token tokenizeTrue();
     Token tokenizeFalse();
     Token tokenizeNull();

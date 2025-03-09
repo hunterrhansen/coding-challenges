@@ -42,7 +42,7 @@ std::vector<Token> Lexer::tokenize() {
         }
         // Handle numbers
         else if (isdigit(c) || c == '-') {
-            tokens.push_back(tokenizeDigit());
+            tokens.push_back(tokenizeDigit(c));
         }
         // Handle true/false/null
         else if (c == 't') {
@@ -126,14 +126,15 @@ enum class NumberState {
     EXPONENT,  // Parsing the exponent
 };
 
-Token Lexer::tokenizeDigit() {
+Token Lexer::tokenizeDigit(char &c) {
     std::string number;
-    char c;
+
     NumberState state = NumberState::INTEGER;
 
-    // Example structure:
+    number += c;
+
     while (file.peek() != EOF) {
-        c = file.peek();  // Look at next character without consuming it
+        c = file.peek();
 
         switch (state) {
             case NumberState::INTEGER:
@@ -205,12 +206,9 @@ Token Lexer::tokenizeDigit() {
                 break;
         }
     }
-    // ... error handling
 
-    // After the switch statement, add EOF handling
-    if (file.peek() == EOF) {
-        return Token(TokenType::NUMBER, number);
-    }
+    // After the switch statement, handle EOF
+    return Token(TokenType::NUMBER, number);
 }
 
 Token Lexer::tokenizeTrue() {
