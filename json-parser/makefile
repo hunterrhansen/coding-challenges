@@ -5,7 +5,7 @@ CXX = g++
 CXXFLAGS = -Wall -std=c++11 -pedantic -I. -g
 
 # Target executable names
-TARGET = lexer
+MAIN_TARGET = json_parser
 TEST_LEXER = test_lexer
 TEST_PARSER = test_parser
 
@@ -32,11 +32,11 @@ $(shell mkdir -p $(BUILD_DIR))
 $(shell mkdir -p $(TEST_TEMP_DIR))
 
 # Main targets
-all: $(TARGET) build_tests
+all: $(MAIN_TARGET) build_tests
 
-# Build the main executable
-$(TARGET): main.o $(OBJECTS)
-	$(CXX) $(CXXFLAGS) main.o $(OBJECTS) -o $(BUILD_DIR)/$(TARGET)
+# Build the main program
+$(MAIN_TARGET): main.o $(OBJECTS)
+	$(CXX) $(CXXFLAGS) main.o $(OBJECTS) -o $(BUILD_DIR)/$(MAIN_TARGET)
 
 # Build the test executables
 build_tests: build_test_lexer build_test_parser
@@ -56,7 +56,7 @@ $(TEST_DIR)/%.o: $(TEST_DIR)/%.cpp
 
 # Clean Rule
 clean:
-	rm -f *.o $(TEST_DIR)/*.o $(BUILD_DIR)/$(TARGET) $(BUILD_DIR)/$(TEST_LEXER) $(BUILD_DIR)/$(TEST_PARSER)
+	rm -f *.o $(TEST_DIR)/*.o $(BUILD_DIR)/$(MAIN_TARGET) $(BUILD_DIR)/$(TEST_LEXER) $(BUILD_DIR)/$(TEST_PARSER)
 	rm -rf $(TEST_TEMP_DIR)/*
 
 # Test Rules
@@ -69,3 +69,7 @@ run_test_lexer:
 
 run_test_parser:
 	./$(BUILD_DIR)/$(TEST_PARSER)
+
+# Run main program
+run: $(MAIN_TARGET)
+	./$(BUILD_DIR)/$(MAIN_TARGET)
